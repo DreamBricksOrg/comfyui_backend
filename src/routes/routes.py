@@ -10,7 +10,6 @@ from pathlib import Path
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Request, BackgroundTasks
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
 
 from core.config import settings
 from core.redis import redis
@@ -19,7 +18,6 @@ from utils.s3 import upload_fileobj
 
 
 router = APIRouter()
-templates = Jinja2Templates(directory="src/static/templates")
 log = structlog.get_logger()
 
 WORKFLOWS_DIR = Path(__file__).resolve().parent.parent / "workflows"
@@ -126,13 +124,8 @@ async def register_notification(
 
     return JSONResponse({"status": "PHONE_REGISTERED"})
 
-@router.get("/api/test", response_class=HTMLResponse)
-async def test_form(request: Request):
-    workflows = [f.name for f in WORKFLOWS_DIR.iterdir() if f.suffix == ".json"]
-    return templates.TemplateResponse("test_workflow.html", {"request": request, "workflows": workflows})
-
-@router.post("/api/test")
-async def test_submit(
+@router.post("/api/upload-workflow")
+async def upload_with_workflow(
     background_tasks: BackgroundTasks,
     workflow: str = Form(...),
     image: UploadFile = Form(...)

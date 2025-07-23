@@ -45,9 +45,6 @@ log_sender = LogSender(
     upload_delay=120
 )
 
-BASE_DIR = Path(__file__).resolve().parent
-STATIC_DIR = BASE_DIR / "static"
-
 app = FastAPI()
 app.add_middleware(SentryAsgiMiddleware)
 
@@ -57,7 +54,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 app.include_router(rest_router)

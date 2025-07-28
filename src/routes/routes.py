@@ -5,7 +5,7 @@ import json
 import asyncio
 
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Request, BackgroundTasks
@@ -62,7 +62,7 @@ async def upload(
     bio = BytesIO(content)
     input_key = upload_fileobj(bio, key_prefix=f"input/{rid}")
 
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     await redis.hset(key, mapping={
         "status": "queued",
         "input": input_key,

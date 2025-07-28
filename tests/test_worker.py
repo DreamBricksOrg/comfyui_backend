@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
 import sys
 
@@ -70,7 +70,7 @@ def test_timeout_sets_failed_status(monkeypatch):
     worker = worker_module.Worker(server_list=[])
 
     async def run_test():
-        start_time = (datetime.utcnow() - timedelta(seconds=301)).isoformat()
+        start_time = (datetime.now(timezone.utc) - timedelta(seconds=301)).isoformat()
         await fake.hset("job:test", mapping={"status": "processing", "proc_start_at": start_time, "server": "srv", "attempt": "1"})
         await worker.process_jobs()
         return await fake.hget("job:test", "status")
